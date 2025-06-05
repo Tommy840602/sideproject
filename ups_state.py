@@ -1,7 +1,7 @@
 import subprocess
 
 def parse_upsc_output() -> dict:
-    result = subprocess.run([r"C:\NUT-for-Windows-x86_64-SNAPSHOT-2.8.3.3028-master\mingw64\sbin\upsc.exe", "dummy@127.0.0.1"], capture_output=True, text=True)
+    result = subprocess.run([r"C:\Users\Tommy.Huang\source\repos\vue_and_opendata\NUT-for-Windows-x86_64-SNAPSHOT-2.8.3.3028-master\mingw64\sbin\upsc.exe", "dummy@127.0.0.1"], capture_output=True, text=True)
     lines = result.stdout.strip().split('\n')
     data = {}
     for line in lines:
@@ -21,3 +21,4 @@ def get_light_color(status: str, battery_charge: int) -> str:
         return "green"
     else:
         return "green"
+

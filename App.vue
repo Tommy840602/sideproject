@@ -13,6 +13,11 @@
             <p>WindSpeed：{{ weatherInfo.weather.WindSpeed }} m/s</p>
         </div>
         <div>
+            <p>Date: {{ suntime.Date }}</p>
+            <p>Sun Rise Time: {{ suntime.SunRiseTime }}</p>
+            <p>Sun Set Time: {{ suntime.SunSetTime }}</p>
+        </div>
+        <div>
             <h3>UPS Info</h3>
             <p>Battery Charge：{{ ups.battery_charge }}%</p>
             <p>Battery Runtime:{{ ups.battery_runtime}}s</p>
@@ -21,6 +26,10 @@
             <p>UPS Load：{{ ups.ups_load }}%</p>
             <p>Input Voltage：{{ ups.input_voltage}}V</p>
             <p>Output Voltage：{{ ups.output_voltage }}V</p>
+        </div>
+        <div>
+            <h3>Knowledge Map</h3>
+            <iframe v-if="mapUrl" :src="mapUrl" frameborder="0" scrolling="no" width="750px" height="750px"></iframe>
         </div>
     </div>
 </template>
@@ -59,12 +68,6 @@
         return `${direction}${degrees} ${minutes}' ${seconds}"`
     }
 
-    function getWeatherIcon(weather) {
-        if (weather.includes("晴")) return "/icons/sunny.png"
-        if (weather.includes("陰")) return "☁️"
-        if (weather.includes("雨")) return "🌧️"
-        return "❓"
-    }
 
     async function fetchWeatherAndLocation() {
         const res = await fetch("https://ipinfo.io/json?token=dc087daf7de4e0")
@@ -139,6 +142,32 @@
         clearInterval(intervalId2)
     })
 
+    const suntime = ref({})
+
+    const fetchSunTime = async () => {
+        const res = await axios.post('http://localhost:8000/api/suntime')
+        suntime.value = res.data
+    }
+
+    let intervalId3 = null
+
+    onMounted(() => {
+        fetchSunTime()
+        intervalId3 = setInterval(fetchSunTime,60*1000)
+    })
+
+    onBeforeUnmount(() => {
+        clearInterval(intervalId3)
+    })
+
+    const mapUrl=ref('')
+
+    onMounted(async () => {
+        const res = await fetch('http://localhost:8000/api/kmap')
+        const data = await res.json()
+        mapUrl.value = 'http://localhost:8000' + data.map_url
+    })
+
 </script>
     
 
@@ -173,4 +202,10 @@
     .black {
         background-color: #000;
     }
+
+    .iframe {
+        width: 100%;
+        height: 100%;
+    }
+
 </style>
